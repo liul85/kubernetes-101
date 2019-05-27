@@ -1,0 +1,215 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>reveal.js</title>
+
+		<link rel="stylesheet" href="css/reset.css">
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/black.css">
+
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="lib/css/monokai.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+				<section data-markdown>
+                    <script type="text/template">
+                        ### What's a container?
+                        
+                        > <!-- .element: class="fragment" -->
+                        Sandbox <!-- .element: class="fragment" -->
+                    </script>
+                </section>
+
+                <section data-markdown>
+                    <script type="text/template">
+                        ### What's a process?
+                        
+                        > <!-- .element: class="fragment" -->
+                        runtime contains all resources <!-- .element: class="fragment" -->
+                        - static <!-- .element: class="fragment" -->
+                        - dynamic <!-- .element: class="fragment" -->
+                    </script>
+                </section>
+                <section data-markdown>
+                    <script type="text/template">
+                        What if there is boundary for container?
+                        
+                        - Namespace <!-- .element: class="fragment" -->
+                        - Cgroups <!-- .element: class="fragment" -->
+                    </script>
+                </section>
+
+                <section>
+                    <section data-markdown>
+                        <script type="text/template">
+                            ### Namespace
+                        </script>
+                    </section>
+    
+                    <section data-markdown>
+                        <script type="text/template">
+                            ```shell
+                            $ docker run -it busybox /bin/sh
+                            / # ps
+                            PID   USER     TIME  COMMAND
+                                1 root      0:00 /bin/sh
+                                7 root      0:00 ps
+                            / # 
+                            ```
+                        </script>
+                    </section>
+
+                    <section data-markdown>
+                        <script type="text/template">
+                            ``` shell
+                            int pid = clone(main_function, stack_size, SIGCHLD, NULL);
+                            ```
+                            ``` shell
+                            int pid = clone(main_function, stack_size, CLONE_NEWPID | SIGCHLD, NULL);
+                            ```
+                        </script>
+                    </section>
+
+                    <section data-markdown>
+                        <script type="text/template">
+                            Namespace
+                            - PID
+                            - Mount
+                            - UTS
+                            - IPC
+                            - Network
+                            - User
+                        </script>
+                    </section>
+                    <section data-markdown>
+                        <script type="text/template">
+                            ![vm-docker](images/vm-docker-1.png)
+                        </script>
+                    </section>
+                    <section data-markdown>
+                        <script type="text/template">
+                            ![vm-docker](images/vm-docker-2.jpg)
+                        </script>
+                    </section>
+                    <section data-markdown>
+                        <script type="text/template">
+                            problems of isolation by Namespace
+                        </script>
+                    </section>
+                </section>
+
+                <section>
+                    <section data-markdown>
+                        <script type="text/template">
+                            ### Cgroups
+                        </script>
+                    </section>
+
+                    <section data-markdown>
+                        <script type="text/template">
+                            ### Constrains
+                            - CPU
+                            - Mem
+                            - Disk
+                            - Network
+
+                            priority/audit/halt/resume
+                        </script>
+                    </section>
+
+                    <section data-markdown>
+                        <script type="text/template">
+                            ``` shell
+                            $ mount -t cgroup 
+                            cpuset on /sys/fs/cgroup/cpuset type cgroup (rw,nosuid,nodev,noexec,relatime,cpuset)
+                            cpu on /sys/fs/cgroup/cpu type cgroup (rw,nosuid,nodev,noexec,relatime,cpu)
+                            cpuacct on /sys/fs/cgroup/cpuacct type cgroup (rw,nosuid,nodev,noexec,relatime,cpuacct)
+                            blkio on /sys/fs/cgroup/blkio type cgroup (rw,nosuid,nodev,noexec,relatime,blkio)
+                            memory on /sys/fs/cgroup/memory type cgroup (rw,nosuid,nodev,noexec,relatime,memory)
+                            ...
+                            ```
+
+                        </script>
+                    </section>
+                    <section data-markdown>
+                        <script type="text/template">
+                            ``` shell
+                            $ ls /sys/fs/cgroup/cpu
+                            cgroup.clone_children cpu.cfs_period_us cpu.rt_period_us  cpu.shares notify_on_release
+                            cgroup.procs      cpu.cfs_quota_us  cpu.rt_runtime_us cpu.stat  tasks
+                            ```
+                            - cfs_period <!-- .element: class="fragment" -->
+                            - cfs_quota <!-- .element: class="fragment" -->
+                        </script>
+                    </section>
+                    <section data-markdown>
+                        <script type="text/template">
+                            ``` shell
+                            root@linux:/sys/fs/cgroup/cpu$ mkdir container
+                            root@linux:/sys/fs/cgroup/cpu$ ls container/
+                            cgroup.clone_children cpu.cfs_period_us cpu.rt_period_us  cpu.shares notify_on_release
+                            cgroup.procs      cpu.cfs_quota_us  cpu.rt_runtime_us cpu.stat  tasks
+
+                            ```
+                        </script>
+                    </section>
+
+                    <section data-markdown>
+                        <script type="text/template">
+                            ``` shell
+                            $ while : ; do : ; done &
+                            ```
+                        </script>
+                    </section>
+
+                    <section data-markdown>
+                        <script type="text/template">
+                            ``` shell
+                            $ echo 20000 > /sys/fs/cgroup/cpu/container/cpu.cfs_quota_us
+                            $ echo $pid > /sys/fs/cgroup/cpu/container/tasks 
+                            ```
+                        </script>
+                    </section>
+
+                    <section data-markdown>
+                        <script type="text/template">
+                            ``` shell
+                            $ docker run -it --cpu-period=100000 --cpu-quota=20000 ubuntu /bin/bash
+                            ```
+                        </script>
+                    </section>
+                </section>
+			</div>
+		</div>
+
+		<script src="js/reveal.js"></script>
+
+		<script>
+			// More info about config & dependencies:
+			// - https://github.com/hakimel/reveal.js#configuration
+			// - https://github.com/hakimel/reveal.js#dependencies
+			Reveal.initialize({
+				dependencies: [
+					{ src: 'plugin/markdown/marked.js' },
+					{ src: 'plugin/markdown/markdown.js' },
+					{ src: 'plugin/notes/notes.js', async: true },
+					{ src: 'plugin/highlight/highlight.js', async: true }
+				]
+			});
+		</script>
+	</body>
+</html>
