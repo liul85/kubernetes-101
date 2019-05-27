@@ -46,7 +46,7 @@
                 </section>
                 <section data-markdown>
                     <script type="text/template">
-                        What if there is boundary for container?
+                        What if there is boundary for process?
                         
                         - Namespace <!-- .element: class="fragment" -->
                         - Cgroups <!-- .element: class="fragment" -->
@@ -190,6 +190,33 @@
                             ``` shell
                             $ docker run -it --cpu-period=100000 --cpu-quota=20000 ubuntu /bin/bash
                             ```
+                        </script>
+                    </section>
+                </section>
+                <section>
+                    <section data-markdown>
+                        ### Container image
+                    </section>
+                    <section data-markdown>
+                        <script type="text/template">
+                            ### file system
+
+                            mount namespace <!-- .element: class="fragment" -->
+                        </script>
+                    </section>
+                    <section data-markdown>
+                        <script type="text/template">
+                            ### demo
+
+                            > <!-- .element: class="fragment" -->
+                            mount("none", "/tmp", "tmpfs", 0, ""); <!-- .element: class="fragment" -->
+
+                            mount root file system before start your container <!-- .element: class="fragment" -->
+                        </script>
+                    </section>
+                    <section data-markdown>
+                        <script type="text/template">
+                            chroot <!-- .element: class="fragment highlight-blue" -->
                         </script>
                     </section>
                 </section>
