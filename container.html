@@ -49,7 +49,6 @@
                         What if there is boundary for process?
                         
                         - Namespace <!-- .element: class="fragment" -->
-                        - Cgroups <!-- .element: class="fragment" -->
                     </script>
                 </section>
 
@@ -86,13 +85,14 @@
 
                     <section data-markdown>
                         <script type="text/template">
-                            Namespace
-                            - PID
-                            - Mount
-                            - UTS
-                            - IPC
-                            - Network
-                            - User
+                            | namespace | system call para|
+                            |------|------|
+                            | PID|CLONE_NEWPID|
+                            | Mount|CLONE_NEWNS|
+                            | UTS|CLONE_NEWUTS|
+                            | IPC|CLONE_NEWIPC|
+                            | Network|CLONE_NEWNET|
+                            | User|CLONE_NEWUSER|
                         </script>
                     </section>
                     <section data-markdown>
@@ -133,6 +133,7 @@
 
                     <section data-markdown>
                         <script type="text/template">
+                            files
                             ``` shell
                             $ mount -t cgroup 
                             cpuset on /sys/fs/cgroup/cpuset type cgroup (rw,nosuid,nodev,noexec,relatime,cpuset)
@@ -149,9 +150,12 @@
                         <script type="text/template">
                             ``` shell
                             $ ls /sys/fs/cgroup/cpu
-                            cgroup.clone_children cpu.cfs_period_us cpu.rt_period_us  cpu.shares notify_on_release
-                            cgroup.procs      cpu.cfs_quota_us  cpu.rt_runtime_us cpu.stat  tasks
+                            cgroup.clone_children cpu.cfs_period_us 
+                            cpu.rt_period_us  cpu.shares notify_on_release
+                            cgroup.procs      cpu.cfs_quota_us
+                            cpu.rt_runtime_us cpu.stat  tasks
                             ```
+
                             - cfs_period <!-- .element: class="fragment" -->
                             - cfs_quota <!-- .element: class="fragment" -->
                         </script>
@@ -217,6 +221,47 @@
                     <section data-markdown>
                         <script type="text/template">
                             chroot <!-- .element: class="fragment highlight-blue" -->
+                        </script>
+                    </section>
+                    <section data-markdown>
+                        <script type="text/template">
+                            mount full OS file system -> image -> rootfs
+                            ```shell
+                            $ ls /
+                            bin dev etc home lib lib64 mnt opt proc root run sbin sys tmp usr var
+
+                            ```
+                        </script>
+                    </section>
+                    <section data-markdown>
+                        <script type="text/template">
+                            1. set namespace
+                            2. set specified Cgroups parameters
+                            3. change root to rootfs
+                        </script>
+                    </section>
+
+                    <section data-markdown>
+                        <script type="text/template">
+                            ### OS core?
+                        </script>
+                    </section>
+                    <section data-markdown>
+                        <script type="text/template">
+                            ### consistency
+                        </script>
+                    </section>
+                    <section data-markdown>
+                        <script type="text/template">
+                            build rootfs
+                            ### UFS <!-- .element: class="fragment" -->
+                            union mount files from different path to specified folder <!-- .element: class="fragment" -->
+                        </script>
+                    </section>
+                    <section data-markdown>
+                        <script type="text/template">
+                            1. rootfs mounted in /var/lib/docker/aufs/mnt, container image, static
+                            2. isolated running environment with Namespace + Cgroups, container runtime, dynamic 
                         </script>
                     </section>
                 </section>
