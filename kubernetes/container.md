@@ -42,8 +42,6 @@ $ cat /sys/fs/cgroup/cpu/docker/5d5c9f67d/cpu.cfs_period_us
 100000
 $ cat /sys/fs/cgroup/cpu/docker/5d5c9f67d/cpu.cfs_quota_us 
 20000
-100000
-
 ```
 
 ```c
@@ -92,3 +90,61 @@ int container_main(void* arg)
   return 1;
 }
 ```
+
+```shell
+mkdir $HOME/chroot_test
+mkdir -p $HOME/chroot_test/{bin,lib,lib64}
+cp /bin/bash $HOME/chroot_test/bin/
+cp /bin/ls $HOME/chroot_test/bin/
+```
+
+```shell
+ldd /bin/ls
+ldd /bin/bash
+```
+
+```shell
+sudo chroot $HOME/chroot_test /bin/bash
+```
+
+```shell
+lliu@lliu-VirtualBox:~/Documents/kubernetes-session/ufs$ tree
+.
+|-- ufs_a
+|   |-- a
+|   `-- x
+`-- ufs_b
+    |-- b
+    `-- x
+```
+
+```shell
+mkdir ufs_c
+sudo mount -t aufs -o dirs=./ufs_a:./ufs_b none ./ufs_c
+lliu@lliu-VirtualBox:~/Documents/kubernetes-session/ufs$ tree
+.
+|-- ufs_a
+|   |-- a
+|   `-- x
+|-- ufs_b
+|   |-- b
+|   `-- x
+`-- ufs_c
+    |-- a
+    |-- b
+    `-- x
+```
+
+```shell
+cat /proc/mounts | grep aufs
+ls /sys/fs/aufs/
+```
+
+```shell
+docker run -d ubuntu:latest sleep 3600
+```
+
+LowerDir：指向镜像层；
+UpperDir：指向容器层，在容器中创建文件后，文件出现在此目录；
+MergedDir：容器挂载点 ，lowerdir和upperdir整合起来提供统一的视图给容器，作为根文件系统；
+WorkDir：用于实现copy_up操作。
