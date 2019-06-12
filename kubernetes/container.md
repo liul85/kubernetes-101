@@ -144,7 +144,10 @@ ls /sys/fs/aufs/
 docker run -d ubuntu:latest sleep 3600
 ```
 
-LowerDir：指向镜像层；
-UpperDir：指向容器层，在容器中创建文件后，文件出现在此目录；
-MergedDir：容器挂载点 ，lowerdir和upperdir整合起来提供统一的视图给容器，作为根文件系统；
-WorkDir：用于实现copy_up操作。
+* LowerDir：指向镜像层；
+* UpperDir：指向容器层，在容器中创建文件后，文件出现在此目录；
+* MergedDir：容器挂载点 ，lowerdir和upperdir整合起来提供统一的视图给容器，作为根文件系统；
+* WorkDir：用于实现copy_up操作。
+
+参考资料：
+深入剖析kubernetes https://time.geekbang.org/column/intro/116
